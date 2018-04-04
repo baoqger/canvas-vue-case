@@ -1,60 +1,67 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <h2>Bar Chart Example</h2>
+    <my-canvas style="width: 100%; height: 600px;">
+      <my-box
+        v-for="obj, index of chartValues"
+        :key="index"
+        :x1="((index / chartValues.length) * 100)"
+        :x2="((index / chartValues.length) * 100) + (100 / chartValues.length)"
+        :y1="100"
+        :y2="100 - obj.val"
+        :color="obj.color"
+        :value="obj.val"
+      >
+      </my-box>
+    </my-canvas>
   </div>
 </template>
-
 <script>
+import MyCanvas from './MyCanvas.vue';
+import MyBox from './MyBox.vue';
+
 export default {
   name: 'app',
-  data () {
+  components: {
+    MyCanvas,
+    MyBox,
+  },
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
-    }
-  }
-}
+      chartValues: [
+        {val: 24, color: 'red'},
+        {val: 32, color: '#0f0'},
+        {val: 66, color: 'rebeccapurple'},
+        {val: 1, color: 'green'},
+        {val: 28, color: 'blue'},
+        {val: 60, color: 'rgba(150, 100, 0, 0.2)'},
+      ],
+    };
+  },
+  mounted() {
+    let dir = 1;
+    let selectedVal = Math.floor(Math.random() * this.chartValues.length);
+    setInterval(() => {
+      if (Math.random() > 0.995) dir *= -1;
+      if (Math.random() > 0.99) selectedVal = Math.floor(Math.random() * this.chartValues.length);
+
+      this.chartValues[selectedVal].val = Math.min(Math.max(this.chartValues[selectedVal].val + dir * 0.5, 0), 100);
+    }, 16);
+  },
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
 
-h1, h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
+  #app {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    padding: 20px;
+    box-sizing: border-box;
+  }
 </style>
